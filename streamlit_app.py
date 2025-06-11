@@ -1,10 +1,12 @@
-import streamlit as st
+from datetime import date, datetime
+
 import pandas as pd
 import plotly.express as px
-from datetime import date, datetime
+import streamlit as st
+
 from supabase_conexion import guardar_sesion, leer_sesiones
 
-st.set_page_config(layout="wide")
+st.set_page_config(page_title="Dashboard de Coaching", layout="wide")
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -21,11 +23,10 @@ usuario_email = "coachdemo@email.com"
 # Ingreso manual o selección de cliente
 clientes = ["Lucía", "Marcos"]
 st.markdown("## 🧑‍💼 Cliente")
-nuevo_cliente = st.checkbox("Agregar nuevo cliente")
-if nuevo_cliente:
-    cliente = st.text_input("Nombre del nuevo cliente")
+if st.checkbox("Agregar nuevo cliente"):
+    cliente_input = st.text_input("Nombre del nuevo cliente")
 else:
-    cliente = st.selectbox("Seleccionar cliente", clientes)
+    cliente_input = st.selectbox("Seleccionar cliente", clientes)
 
 # Formulario de registro
 st.markdown("## ✍️ Registrar nueva sesión")
@@ -35,15 +36,15 @@ with st.form("registro_sesion"):
     objetivo = st.text_input("Objetivo trabajado")
     accion = st.text_input("Acción comprometida")
     estado = st.selectbox("Estado de avance", ["Completado", "En progreso", "Pendiente"])
-    submitted = st.form_submit_button("Guardar sesión")
+    submitted = st.form_submit_button(label="💾 Guardar sesión")
 
-    if submitted and cliente:
-        guardar_sesion(usuario_email, cliente, datetime.combine(fecha, datetime.min.time()), claridad, objetivo, accion, estado)
+    if submitted and cliente_input:
+        guardar_sesion(usuario_email, cliente_input, fecha, claridad, objetivo, accion, estado)
         st.success("✅ Sesión guardada exitosamente")
 
 # Visualización
-if cliente:
-    sesiones = leer_sesiones(usuario_email, cliente)
+if cliente_input:
+    sesiones = leer_sesiones(usuario_email, cliente_input)
     if sesiones:
         df = pd.DataFrame(sesiones)
         st.markdown("---")
@@ -61,14 +62,19 @@ if cliente:
 
         with col_der:
             st.subheader("📋 Sesiones")
-            st.dataframe(df[["Fecha", "Objetivo de sesión", "Estado de avance"]], use_container_width=True)
+            st.dataframe(df[["Fecha", "Objetivo de sesión", "Estado de avance"]].rename(columns={
+                "Fecha": "🗓 Fecha",
+                "Objetivo de sesión": "🎯 Objetivo",
+                "Estado de avance": "📌 Estado"
+            }), use_container_width=True)
 
         st.markdown("---")
         ultima = df.iloc[-1]
         st.markdown("### 🧠 Última sesión registrada")
         st.markdown(f"🗓️ Fecha: **{ultima['Fecha']}**")
         st.markdown(f"🎯 Objetivo: _{ultima['Objetivo de sesión']}_")
-        st.markdown(f"📌 Acción: {ultima['Acción comprometida']}")
+        st.markdown(f"📌 Acción comprometida:")
+        st.code(ultima["Acción comprometida"])
         st.markdown(f"✅ Estado: **{ultima['Estado de avance']}**")
     else:
         st.info("No hay sesiones registradas todavía.")
