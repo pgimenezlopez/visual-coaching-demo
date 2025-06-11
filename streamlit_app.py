@@ -15,7 +15,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.title("🚀 Dashboard de Coaching Personalizado")
-st.markdown("Seguimiento visual y registro de procesos de coaching con datos en la nube (Firebase).")
+st.markdown("Seguimiento visual y registro de procesos de coaching con datos en la nube (Supabase).")
 
 # Usuario simulado (en producción, usar login real)
 usuario_email = "coachdemo@email.com"
