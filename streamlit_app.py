@@ -18,28 +18,29 @@ st.markdown("Seguimiento visual y registro de procesos de coaching con datos en 
 # Usuario simulado (en producción, usar login real)
 usuario_email = "coachdemo@email.com"
 
-# Ingreso manual o selección de cliente
+# Ingreso manual o selección de cliente en la barra lateral
 clientes = ["Lucía", "Marcos"]
-st.markdown("## 🧑‍💼 Cliente")
-nuevo_cliente = st.checkbox("Agregar nuevo cliente")
+st.sidebar.markdown("## 🧑‍💼 Cliente")
+nuevo_cliente = st.sidebar.checkbox("Agregar nuevo cliente")
 if nuevo_cliente:
-    cliente = st.text_input("Nombre del nuevo cliente")
+    cliente = st.sidebar.text_input("Nombre del nuevo cliente")
 else:
-    cliente = st.selectbox("Seleccionar cliente", clientes)
+    cliente = st.sidebar.selectbox("Seleccionar cliente", clientes)
 
 # Formulario de registro
 st.markdown("## ✍️ Registrar nueva sesión")
-with st.form("registro_sesion"):
-    fecha = st.date_input("Fecha de sesión", value=date.today())
-    claridad = st.slider("Nivel de claridad (1-10)", 1, 10, 5)
-    objetivo = st.text_input("Objetivo trabajado")
-    accion = st.text_input("Acción comprometida")
-    estado = st.selectbox("Estado de avance", ["Completado", "En progreso", "Pendiente"])
-    submitted = st.form_submit_button("Guardar sesión")
+with st.expander("Registrar nueva sesión", expanded=True):
+    with st.form("registro_sesion"):
+        fecha = st.date_input("Fecha de sesión", value=date.today())
+        claridad = st.slider("Nivel de claridad (1-10)", 1, 10, 5)
+        objetivo = st.text_input("Objetivo trabajado")
+        accion = st.text_input("Acción comprometida")
+        estado = st.selectbox("Estado de avance", ["Completado", "En progreso", "Pendiente"])
+        submitted = st.form_submit_button("Guardar sesión")
 
-    if submitted and cliente:
-        guardar_sesion(usuario_email, cliente, datetime.combine(fecha, datetime.min.time()), claridad, objetivo, accion, estado)
-        st.success("✅ Sesión guardada exitosamente")
+        if submitted and cliente:
+            guardar_sesion(usuario_email, cliente, datetime.combine(fecha, datetime.min.time()), claridad, objetivo, accion, estado)
+            st.success("✅ Sesión guardada exitosamente")
 
 # Visualización
 if cliente:

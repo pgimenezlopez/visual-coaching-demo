@@ -1,6 +1,7 @@
 from supabase import create_client
 import streamlit as st
 from supabase._sync.client import SyncClient
+from datetime import datetime
 
 url = st.secrets["SUPABASE_URL"]
 key = st.secrets["SUPABASE_KEY"]
