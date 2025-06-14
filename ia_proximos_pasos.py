@@ -1,9 +1,8 @@
+from openai import OpenAI
 
-import openai
 import streamlit as st
 
 # Configuración de la API Key (leer desde secrets)
-openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 def generar_proximos_pasos(texto_usuario):
     prompt = f"""
@@ -16,16 +15,15 @@ def generar_proximos_pasos(texto_usuario):
     """
 
     try:
-        respuesta = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "Sos un asistente de coaching que brinda próximos pasos breves y útiles."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.7,
-            max_tokens=200
-        )
-        pasos = respuesta.choices[0].message['content'].strip()
+        client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+        respuesta = client.chat.completions.create(model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "Sos un asistente de coaching que brinda próximos pasos breves y útiles."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.7,
+        max_tokens=200)
+        pasos = respuesta.choices[0].message.content.strip()
         return pasos
     except Exception as e:
         return f"⚠️ Error al generar los pasos: {e}"
